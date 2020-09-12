@@ -10,7 +10,7 @@ import numpy as np
 cimport numpy as np
 
 from scipy import ndimage
-from scipy.misc import toimage, imresize
+# from scipy.misc import toimage, imresize
 
 from skimage.measure import approximate_polygon
 from skimage.draw import line
@@ -115,7 +115,7 @@ class SC(object):
             sn = np.zeros((self.nbins_r, self.nbins_theta), dtype=np.int)
             for j in range(l1):
                 if fz[i, j]:
-                    sn[r_array_q[i, j] - 1, theta_array_q[i, j] - 1] += 1
+                    sn[int(r_array_q[i, j] - 1), int(theta_array_q[i, j] - 1)] += 1
             BH[i] = sn.reshape(self.nbins)
         return BH, theta_array_2, r_array_n
 
@@ -191,7 +191,7 @@ def display(total):
     import matplotlib.pyplot as plt
     for t in total:
         plt.plot(t[:, 0], t[:, 1])
-    plt.show()
+    # plt.show()
 
 
 def generate_polyimage(total, r):
@@ -443,7 +443,7 @@ def prepare_characters(Tw=15, Th=28, font_size=24, ratio=0.9, more_char=True):
         if i < 128:
             d.text((0, 0), chr(i), font=font, fill='black')
         else:
-            d.text((0, 0), unichr(i), font=font, fill='black')
+            d.text((0, 0), chr(i), font=font, fill='black')
         # img = ndimage.gaussian_filter(img, 1))
         img_data = np.asarray(img)
         ratio = 0.9
@@ -490,7 +490,7 @@ def test_once(aiss, final, Rw, Rh, whole, letters):
                 chara = ' '
             else:
                 if let > 128:
-                    chara = unichr(let)
+                    chara = chr(let)
                 else:
                     chara = chr(let)
             sen += chara
@@ -505,7 +505,7 @@ def image_to_ascii(file_name='/Users/liyang/Desktop/monk_1.bmp', ratio=0.2, Rw=1
     # -----------------------------------------------
     # load image and extract segments
     (whole, segments), Rh = load_img(ratio, file_name, Rw)
-    toimage(whole).show()
+    #toimage(whole).show()
 
     cdef int c=0
     cdef int c0=0
@@ -542,7 +542,7 @@ def image_to_ascii(file_name='/Users/liyang/Desktop/monk_1.bmp', ratio=0.2, Rw=1
             back_up_segments = copy.deepcopy(segments)
             # back_up_D_cell = copy.deepcopy(D_cell)
             # pick a random point
-            point = random.choice(segments_dict.keys())
+            point = random.choice(list(segments_dict.keys()))
             near_points = segments_dict[point]
             t = np.random.uniform(0.0, 2.0 * np.pi)
             r = int(np.random.uniform(2, rad))
@@ -583,7 +583,7 @@ def image_to_ascii(file_name='/Users/liyang/Desktop/monk_1.bmp', ratio=0.2, Rw=1
                 for cell in new_cells:
                     # recompute aiss each cell
                     img_data = whole[int(cell[0] * Th):int(cell[0] * Th + Th), int(cell[1] * Tw):int(cell[1] * Tw + Tw)]
-                    aiss[cell], final[cell] = compute_aiss(img_data, letters)
+                    aiss[int(cell)], final[int(cell)] = compute_aiss(img_data, letters)
                 # compute every cell's deform
                 for index, cell in enumerate(cells):
                     # do not compute the repeated cell again
@@ -671,9 +671,9 @@ def image_to_ascii(file_name='/Users/liyang/Desktop/monk_1.bmp', ratio=0.2, Rw=1
                     let = ' '
                 else:
                     if ind > 128:
-                        let = unichr(ind)
+                        let = chr(ind)
                     else:
                         let = chr(ind)
                 sen += let
             print sen
-        toimage(whole).show()
+        #toimage(whole).show()
